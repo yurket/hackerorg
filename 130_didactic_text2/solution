@@ -1,0 +1,65 @@
+with open('original', 'rb') as f:
+    f.readlines()
+
+# OUT: ['Thy raiment waxed not old upon thee, neither did thy foot swell, these forty years. And it shall be, when the officers have made an end of speaking unto the people that they shall make captains of the armies to lead the people. And it shall be, if thou have no delight in her, then thou shalt let her go whither she will; but thou shalt not sell her at all for money, thou shalt not make merchandise of her, because thou hast humbled her. Look down from thy holy habitation, from heaven, and bless thy people Israel, and the land which thou hast given us, as thou swarest unto our fathers, a land that floweth with milk and honey. Now therefore write ye this song for you, and teach it the children of Israel: put it in their mouths, that this song may be a witness for me against the children of Israel. But Jeshurun waxed fat, and kicked: thou art waxen fat, thou art grown thick, thou art covered with fatness; then he forsook God which made him, and lightly esteemed the Rock of his salvation. And I commanded you at that time all the things which ye should do. When a man hath taken a new wife, he shall not go out to war, neither shall he be charged with any business: but he shall be free at home one year, and shall cheer up his wife which he hath taken. When a man hath taken a wife, and married her, and it come to pass that she find no favour in his eyes, because he hath found some uncleanness in her: then let him write her a bill of divorcement, and give it in her hand, and send her out of his house. They shall call the people unto the mountain; there they shall offer sacrifices of righteousness: for they shall suck of the abundance of the seas, and of treasures hid in the sand. Cursed shalt thou be when thou comest in, and cursed shalt thou be when thou goest out. ']
+data = ''
+with open('original', 'rb') as f:
+    data = f.readlines()
+
+data
+# OUT: ['Thy raiment waxed not old upon thee, neither did thy foot swell, these forty years. And it shall be, when the officers have made an end of speaking unto the people that they shall make captains of the armies to lead the people. And it shall be, if thou have no delight in her, then thou shalt let her go whither she will; but thou shalt not sell her at all for money, thou shalt not make merchandise of her, because thou hast humbled her. Look down from thy holy habitation, from heaven, and bless thy people Israel, and the land which thou hast given us, as thou swarest unto our fathers, a land that floweth with milk and honey. Now therefore write ye this song for you, and teach it the children of Israel: put it in their mouths, that this song may be a witness for me against the children of Israel. But Jeshurun waxed fat, and kicked: thou art waxen fat, thou art grown thick, thou art covered with fatness; then he forsook God which made him, and lightly esteemed the Rock of his salvation. And I commanded you at that time all the things which ye should do. When a man hath taken a new wife, he shall not go out to war, neither shall he be charged with any business: but he shall be free at home one year, and shall cheer up his wife which he hath taken. When a man hath taken a wife, and married her, and it come to pass that she find no favour in his eyes, because he hath found some uncleanness in her: then let him write her a bill of divorcement, and give it in her hand, and send her out of his house. They shall call the people unto the mountain; there they shall offer sacrifices of righteousness: for they shall suck of the abundance of the seas, and of treasures hid in the sand. Cursed shalt thou be when thou comest in, and cursed shalt thou be when thou goest out. ']
+len(data.split())
+# OUT: Traceback (most recent call last):
+# OUT:   File "<input>", line 1, in <module>
+# OUT: AttributeError: 'list' object has no attribute 'split'
+s = data[0]
+len(s.split())
+# OUT: 346
+len(s.split('.'))
+# OUT: 12
+len(s)
+# OUT: 1786
+l1 = [8, 20, 21, 26, 31, 32, 1, 24, 24, 33, 28]
+for x in l1:
+    pass
+
+''.join([s[i] for i in l1])
+# OUT: 'et uthhddeo'
+l2 = [4, 9, 14, 15, 19, 15, 18, 5, 1, 19, 19]
+l3 = [x,y for x,y in zip(l1,l2)]
+# OUT:   File "<input>", line 1
+# OUT:     l3 = [x,y for x,y in zip(l1,l2)]
+# OUT:                 ^
+# OUT: SyntaxError: invalid syntax
+zip(l1,l2)
+# OUT: [(8, 4), (20, 9), (21, 14), (26, 15), (31, 19), (32, 15), (1, 18), (24, 5), (24, 1), (33, 19), (28, 19)]
+l3 = zip(l1,l2)
+l4 = [ s[i]+s[j] for i,j in l3]
+l4
+# OUT: ['er', 'tn', ' x', 'ue', 'to', 'he', 'hn', 'da', 'dh', 'eo', 'oo']
+l4 = [ s[i-1]+s[j-1] for i,j in l3]
+l4
+# OUT: ['m ', 'oe', 'ta', ' x', ' n', 'tx', 'T ', 'lr', 'lT', 'hn', 'pn']
+''.join([s[i-1] for i in l1])
+# OUT: 'mot  tTllhp'
+''.join([s[i-1] for i in l2])
+# OUT: ' eaxnx rTnn'
+''.join([s[i] for i in l2])
+# OUT: 'rnxeoenahoo'
+l3
+# OUT: [(8, 4), (20, 9), (21, 14), (26, 15), (31, 19), (32, 15), (1, 18), (24, 5), (24, 1), (33, 19), (28, 19)]
+[x+y for x,y in l3]
+# OUT: [12, 29, 35, 41, 50, 47, 19, 29, 25, 52, 47]
+''.join( [ s[i] for i in [x+y for x,y in l3]]) 
+# OUT: 'wn,hhdon  d'
+import string
+string.ascii_lowercase
+# OUT: 'abcdefghijklmnopqrstuvwxyz'
+''.join([string.ascii_lowercase[i] for i in l2])
+# OUT: 'ejoptpsfbtt'
+''.join([string.ascii_lowercase[i] for i in s])
+# OUT: Traceback (most recent call last):
+# OUT:   File "<input>", line 1, in <module>
+# OUT: TypeError: string indices must be integers, not str
+''.join([string.ascii_lowercase[i-1] for i in l2])
+# OUT: 'dinosoreass'
