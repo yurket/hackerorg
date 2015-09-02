@@ -31,18 +31,18 @@ class D(object):
 def main():
     drawer = D(8, 8)
     color('red', 'yellow')
-    
+
+    map_table = {
+        '1': getattr(drawer, 'right_')
+        , '2': getattr(drawer, 'left_')
+        , '3': getattr(drawer, 'down_')
+        , '4': getattr(drawer, 'up_')
+    }
+
     with open('inputg', 'r') as f:
         for line in f.readlines():
             l = line.strip()
-            if l == '2':
-                drawer.left_()
-            elif l == '3':
-                drawer.down_()
-            elif l == '1':
-                drawer.right_()
-            elif l == '4':
-                drawer.up_()
+            map_table[l]()
 
     end_fill()
     done()
