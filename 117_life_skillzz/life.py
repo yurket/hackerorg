@@ -71,6 +71,8 @@ class LifeSimulation(object):
     def simulate_life(self, generations: int):
         iters = generations
         while iters:
+            if iters and (iters % 10**5 == 0):
+                print(f'{iters} generations left to simulate')
             self._simulate_one_step()
             iters -= 1
 
@@ -129,6 +131,12 @@ class LifeSimulationTest(unittest.TestCase):
         sim.simulate_life(any_generations)
 
         self.assertEqual(sim.get_population_num(), 0)
+
+    def test_solution(self):
+        sim = LifeSimulation()
+        ten_bils = 10*10**9
+        sim.simulate_life(ten_bils)
+        print(f'Population after {ten_bils} generations: {sim.get_population_num()}')
 
 
 # check field shrinking
