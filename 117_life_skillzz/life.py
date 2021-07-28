@@ -35,6 +35,7 @@ class LifeSimulation(object):
 
     def _get_alive_cells_around(self, row: int, col: int) -> int:
         square_subfield = self.field[row-1:row+2, col-1:col+2]
+        assert square_subfield.shape == (3,3)
         return np.sum(square_subfield == 1) - self.field[row, col]
 
     @staticmethod
@@ -61,9 +62,20 @@ class LifeSimulation(object):
             for j in range(1, m-1):
                 new_field[i,j] = self._determine_new_cell_state(i, j)
         self.field = new_field
+        print(f'New field size: {self.field.shape}')
+        self.print_field()
 
     def get_field(self) -> np.ndarray:
         return self.field
+
+    def print_field(self) -> None:
+        print()
+        for row in self.field:
+            print('|', end='')
+            for x in row:
+                c = ' X ' if x else ' - '
+                print(c, end='')
+            print('|')
 
     def get_population_num(self) -> int:
         return np.sum(self.field == 1)
@@ -78,14 +90,17 @@ class LifeSimulation(object):
 
 
 class LifeSimulationTest(unittest.TestCase):
-    expanded_ones = np.array([[0,0,0],
-                             [0,1,0],
-                             [0,0,0]])
+    def setUp(self):
+        self.expanded_ones = np.array([
+            [0,0,0],
+            [0,1,0],
+            [0,0,0]
+        ])
+
+        self.default_sim = LifeSimulation()
 
     def test_population_num_on_start(self):
-        sim = LifeSimulation()
-
-        self.assertEqual(sim.get_population_num(), 5)
+        self.assertEqual(self.default_sim.get_population_num(), 5)
 
     def test_user_can_set_custom_field(self):
         my_field = np.array([[0,1],[1,0]])
@@ -108,35 +123,92 @@ class LifeSimulationTest(unittest.TestCase):
         np.testing.assert_array_equal(sim.get_field(), self.expanded_ones)
 
     def test_simulation_with_zero_generations_returns_original_field(self):
-        sim = LifeSimulation()
-        sim.simulate_life(0)
+        self.default_sim.simulate_life(0)
 
-        self.assertEqual(sim.get_population_num(), 5)
+        self.assertEqual(self.default_sim.get_population_num(), 5)
 
     def test_counting_alive_cells_1(self):
+
         sim = LifeSimulation(self.expanded_ones)
 
         self.assertEqual(sim._get_alive_cells_around(1,1), 0)
 
+    def test_counting_alive_cells_2(self):
+        test_field = [[1,0,1,1],
+                      [0,1,0,0],
+                      [0,0,1,1],
+                      [1,1,1,1]]
+        sim = LifeSimulation(test_field)
+
+        self.assertEqual(sim._get_alive_cells_around(1,1), 3)
+        self.assertEqual(sim._get_alive_cells_around(1,2), 5)
+        self.assertEqual(sim._get_alive_cells_around(2,1), 5)
+        self.assertEqual(sim._get_alive_cells_around(2,2), 5)
+
     def test_counting_alive_cells_in_default_field(self):
-        sim = LifeSimulation()
         alive_cells_around_center_cell = 4
 
-        self.assertEqual(sim._get_alive_cells_around(1, 1), alive_cells_around_center_cell)
+        self.assertEqual(self.default_sim._get_alive_cells_around(1, 1), alive_cells_around_center_cell)
 
     def test_that_single_cell_always_dies(self):
         single_cell = [[1]]
         sim = LifeSimulation(single_cell)
-        any_generations = 42
+        any_generations = 3
         sim.simulate_life(any_generations)
 
         self.assertEqual(sim.get_population_num(), 0)
 
+    # https://en.wikipedia.org/wiki/Conway%27s_Game_of_Life#Examples_of_patterns
+    def test_oscillator_field(self):
+        blinker_field = [
+            [0,0,0,0,0],
+            [0,0,0,0,0],
+            [0,1,1,1,0],
+            [0,0,0,0,0],
+            [0,0,0,0,0],
+        ]
+        blinked_field = np.array([
+            [0,0,0,0,0],
+            [0,0,1,0,0],
+            [0,0,1,0,0],
+            [0,0,1,0,0],
+            [0,0,0,0,0],
+        ])
+        sim = LifeSimulation(blinker_field)
+
+        sim.simulate_life(1)
+        np.testing.assert_array_equal(sim.get_field(), blinked_field)
+
+    def test_printint_field(self):
+        self.default_sim.print_field()
+
+    def test_default_field_after_first_generation(self):
+        field_after_one_gen = np.array([
+            [0,0,0,0,0],
+            [0,1,1,1,0],
+            [0,1,0,0,0],
+            [0,1,1,0,0],
+            [0,0,0,0,0],
+        ])
+        self.default_sim.simulate_life(1)
+        np.testing.assert_array_equal(self.default_sim.get_field(), field_after_one_gen)
+
+        field_after_two_gens = np.array([
+            [0,0,1,0,0],
+            [0,1,1,0,0],
+            [1,0,0,1,0],
+            [0,1,1,0,0],
+            [0,0,0,0,0],
+        ])
+        self.default_sim.simulate_life(1)
+        np.testing.assert_array_equal(self.default_sim.get_field(), field_after_two_gens)
+
+
     def test_solution(self):
-        sim = LifeSimulation()
-        ten_bils = 10*10**9
-        sim.simulate_life(ten_bils)
-        print(f'Population after {ten_bils} generations: {sim.get_population_num()}')
+        # generations = 10*10**9
+        generations = 10
+        self.default_sim.simulate_life(generations)
+        print(f'Population after {generations} generations: {self.default_sim.get_population_num()}')
 
 
 # check field shrinking
