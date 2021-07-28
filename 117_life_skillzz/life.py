@@ -34,8 +34,14 @@ class LifeSimulation(object):
             self.field = np.hstack((self.field, np.zeros_like(right_col)))
 
     def _get_alive_cells_around(self, row: int, col: int) -> int:
-        square_subfield = self.field[row-1:row+2, col-1:col+2]
-        assert square_subfield.shape == (3,3)
+        rows, cols = self.field.shape
+        start_row = max(0, row-1)
+        end_row = min(row+2, rows)
+        start_col = max(0, col-1)
+        end_col = min(col+2, cols)
+
+        square_subfield = self.field[start_row:end_row, start_col:end_col]
+
         return np.sum(square_subfield == 1) - self.field[row, col]
 
     @staticmethod
@@ -44,7 +50,7 @@ class LifeSimulation(object):
 
     def _determine_new_cell_state(self, i: int, j: int) -> int:
         n,m = self.field.shape
-        assert (i-1 >= 0) and (j-1 >= 0) and (i+1 <= n) and (j+1 <= m), "Cell should not be on field edges!"
+        assert (i >= 0) and (j >= 0) and (i <= n) and (j <= m), "Cell should not be inside the field!"
         cell = self.field[i, j]
         alive_cells_around = self._get_alive_cells_around(i, j)
         if self._is_cell_alive(cell) and (alive_cells_around == 2 or alive_cells_around == 3):
@@ -58,8 +64,8 @@ class LifeSimulation(object):
 
         new_field = np.zeros_like(self.field)
         n,m = self.field.shape
-        for i in range(1, n-1):
-            for j in range(1, m-1):
+        for i in range(0, n):
+            for j in range(0, m):
                 new_field[i,j] = self._determine_new_cell_state(i, j)
         self.field = new_field
         print(f'New field size: {self.field.shape}')
@@ -128,7 +134,6 @@ class LifeSimulationTest(unittest.TestCase):
         self.assertEqual(self.default_sim.get_population_num(), 5)
 
     def test_counting_alive_cells_1(self):
-
         sim = LifeSimulation(self.expanded_ones)
 
         self.assertEqual(sim._get_alive_cells_around(1,1), 0)
@@ -144,6 +149,20 @@ class LifeSimulationTest(unittest.TestCase):
         self.assertEqual(sim._get_alive_cells_around(1,2), 5)
         self.assertEqual(sim._get_alive_cells_around(2,1), 5)
         self.assertEqual(sim._get_alive_cells_around(2,2), 5)
+
+    def test_counting_alive_cells_on_edges(self):
+        test_field = [[1,0,1,1],
+                      [0,1,0,0],
+                      [0,0,1,1],
+                      [1,1,1,1]]
+        sim = LifeSimulation(test_field)
+
+        self.assertEqual(sim._get_alive_cells_around(0,0), 1)
+        self.assertEqual(sim._get_alive_cells_around(0,1), 3)
+        self.assertEqual(sim._get_alive_cells_around(0,1), 3)
+        self.assertEqual(sim._get_alive_cells_around(0,3), 1)
+        self.assertEqual(sim._get_alive_cells_around(2,0), 3)
+        self.assertEqual(sim._get_alive_cells_around(3,3), 3)
 
     def test_counting_alive_cells_in_default_field(self):
         alive_cells_around_center_cell = 4
@@ -206,7 +225,7 @@ class LifeSimulationTest(unittest.TestCase):
 
     def test_solution(self):
         # generations = 10*10**9
-        generations = 10
+        generations = 100
         self.default_sim.simulate_life(generations)
         print(f'Population after {generations} generations: {self.default_sim.get_population_num()}')
 
